@@ -18,8 +18,4 @@
       <ProjectReference Include="..\Aiko.Domain\Aiko.Domain.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Repositories\" />
-    </ItemGroup>
-
 </Project>

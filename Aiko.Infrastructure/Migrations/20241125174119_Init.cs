@@ -13,7 +13,7 @@ namespace Aiko.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Authors",
+                name: "Entities",
                 columns: table => new
                 {
                     client_Id = table.Column<long>(type: "bigint", nullable: false)
@@ -23,7 +23,7 @@ namespace Aiko.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Authors", x => x.client_Id);
+                    table.PrimaryKey("PK_Entities", x => x.client_Id);
                 });
         }
 
@@ -31,7 +31,7 @@ namespace Aiko.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Authors");
+                name: "Entities");
         }
     }
 }

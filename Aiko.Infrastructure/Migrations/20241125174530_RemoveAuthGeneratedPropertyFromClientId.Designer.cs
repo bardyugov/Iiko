@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Aiko.Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20241125115151_Init")]
-    partial class Init
+    [Migration("20241125174530_RemoveAuthGeneratedPropertyFromClientId")]
+    partial class RemoveAuthGeneratedPropertyFromClientId
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,13 +28,11 @@ namespace Aiko.Infrastructure.Migrations
             modelBuilder.Entity("Aiko.Domain.Entity", b =>
                 {
                     b.Property<long>("ClientId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasColumnName("client_Id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("ClientId"));
-
                     b.Property<Guid>("SystemId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("system_id");
 
@@ -45,7 +43,7 @@ namespace Aiko.Infrastructure.Migrations
 
                     b.HasKey("ClientId");
 
-                    b.ToTable("Authors");
+                    b.ToTable("Entities");
                 });
 #pragma warning restore 612, 618
         }

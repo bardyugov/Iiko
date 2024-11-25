@@ -1,10 +1,11 @@
 using Aiko.Domain;
 using Microsoft.EntityFrameworkCore;
+
 namespace Aiko.Infrastructure.Database;
 
 public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbContext(options)
 {
-    public DbSet<Entity> Authors { get; set; }
+    public DbSet<Entity> Entities { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -13,7 +14,8 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbCont
 
         modelBuilder.Entity<Entity>()
             .Property(e => e.ClientId)
-            .HasColumnName("client_Id");
+            .HasColumnName("client_Id")
+            .ValueGeneratedNever();
 
         modelBuilder.Entity<Entity>()
             .Property(e => e.Username)
@@ -23,6 +25,7 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbCont
         modelBuilder.Entity<Entity>()
             .Property(e => e.SystemId)
             .IsRequired()
-            .HasColumnName("system_id");
+            .HasColumnName("system_id")
+            .ValueGeneratedOnAdd();
     }
 }
