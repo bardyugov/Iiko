@@ -5,3 +5,4 @@ obj/
 wwwroot/
 postgres-data/
 .DS_STORE
+published/

@@ -30,7 +30,7 @@ builder.Services
     .AddSerilog()
     .AddDbContext<DatabaseContext>(opt => opt.UseNpgsql(config.GetConnectionString("URI")))
     .AddScoped<IClientRepository, ClientRepository>()
-    .AddFluentValidation(fv =>
+    .AddFluentValidationAutoValidation(fv =>
     {
         fv.DisableDataAnnotationsValidation = true;
     });
