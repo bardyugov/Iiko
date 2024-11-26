@@ -7,5 +7,4 @@ public class Client(long clientId, string username, Guid systemId)
     public string Username { get; set; } = username;
 
     public Guid SystemId { get; set; } = systemId;
-    
 }

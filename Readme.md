@@ -10,14 +10,14 @@ Applying migrations
 dotnet ef database update --project Iiko.Infrastructure --startup-project Iiko.Core
 ```
 
-Run without docker 
+Run Development Mode 
 ```sh
 dotnet ef database update --project Iiko.Infrastructure --startup-project Iiko.Core
 cd ./Iiko.Core
 dotnet run 
 ```
 
-Run with docker
+Run Production Mode
 ```sh
 docker-compose up
 ```

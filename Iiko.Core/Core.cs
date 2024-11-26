@@ -35,15 +35,12 @@ builder.Services
         fv.DisableDataAnnotationsValidation = true;
     });
 
-
-
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+// If production mode - off
+app.UseSwagger();
+app.UseSwaggerUI();
+//
 
 app.UseHttpsRedirection();
 app.MapControllers();
