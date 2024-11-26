@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text.Json;
 using FluentValidation;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Aiko.Common.ExceptionsFilter;
 
@@ -21,23 +22,22 @@ public class ExceptionsFilterHandler(RequestDelegate next, ILogger<ExceptionsFil
 
     private Task HandleException(Exception exception, HttpContext context)
     {
-        var code = HttpStatusCode.BadRequest;
-        var result = string.Empty;
+        var code = HttpStatusCode.InternalServerError;
+        var result = JsonSerializer.Serialize(new { Error = exception.Message });
 
         switch (exception)
         {
-            case ValidationException validationException:
+            case BadHttpRequestException:
+                code = HttpStatusCode.BadRequest;
+                break;
+            default:
+                logger.LogCritical("Exception: {@exception}", exception);
                 break;
         }
-
+        
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)code;
-            
-        if (string.IsNullOrEmpty(result))
-        {
-            result = JsonSerializer.Serialize(new { Error = exception.Message });
-        }
-
+        
         return context.Response.WriteAsync(result);
     }
 }

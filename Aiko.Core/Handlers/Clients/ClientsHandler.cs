@@ -1,14 +1,14 @@
+using Aiko.Application.Commands;
 using Aiko.Application.Repositories;
-using Aiko.Handlers.Entities.Commands;
-using Aiko.Handlers.Entities.Commands.UpdateEntitiesCommand;
+using Aiko.Handlers.Clients.Dtos.Update;
 using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Aiko.Handlers.Entities;
+namespace Aiko.Handlers.Clients;
 
 [ApiController]
-[Route("entities")]
-public class EntitiesHandler (IEntityRepository entityRepository): ControllerBase
+[Route("clients")]
+public class ClientsHandler (IClientRepository clientRepository): ControllerBase
 {
     private IActionResult ConvertToActionResult<T>(Result<T> result)
     {
@@ -21,29 +21,33 @@ public class EntitiesHandler (IEntityRepository entityRepository): ControllerBas
     [HttpGet]
     public async Task<IActionResult> Get(CancellationToken token)
     {
-        var entities = await entityRepository.Get(token);
+        var clients = await clientRepository.Get(token);
 
-        return Ok(entities);
+        return Ok(clients);
     }
     
     [HttpGet("find")]
     public async Task<IActionResult> Find([FromQuery(Name = "id")] long id, CancellationToken token)
     {
-        var result = await entityRepository.TryGet(id, token);
+        var result = await clientRepository.TryGet(id, token);
         return ConvertToActionResult(result);
     }
 
     [HttpDelete("remove")]
     public async Task<IActionResult> Remove([FromQuery(Name = "id")] long id, CancellationToken token)
     {
-        var result = await entityRepository.Remove(id, token);
+        var result = await clientRepository.Remove(id, token);
         return ConvertToActionResult(result);
     }
 
     [HttpPost("update")]
-    public async Task<IActionResult> Update(UpdateEntitiesCommand command, CancellationToken token)
+    public async Task<IActionResult> Update(UpdateClientsDto dto, CancellationToken token)
     {
-        var result = await entityRepository.Update(command.Entities, token);
+        var updateClientCommand = dto.Clients
+            .Select(v => new InsertClientCommand(v.ClientId, v.Username))
+            .ToList();
+        
+        var result = await clientRepository.Update(updateClientCommand, token);
         return Ok(result);
     }
 }

@@ -1,17 +1,14 @@
 using Aiko.Application.Repositories;
+using Aiko.Common.AssemblyMarker;
 using Aiko.Common.ExceptionsFilter;
-
 using Aiko.Infrastructure.Database;
 using Aiko.Infrastructure.Repositories;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
-
-var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
 var config = builder.Configuration;
 
@@ -20,15 +17,24 @@ Log.Logger = new LoggerConfiguration()
     .Configuration(builder.Configuration)
     .CreateLogger();
 
-builder.Services
-    .AddDbContext<DatabaseContext>(opt => opt.UseNpgsql(config.GetConnectionString("URI")))
-    .AddScoped<IEntityRepository, EntityRepository>()
-    .AddValidatorsFromAssemblies(assemblies)
-    .AddFluentValidationAutoValidation()
+var connectionString = config.GetConnectionString("URI");
+
+Log.Information("ConnectionString: {@connectionString}", connectionString);
+
+builder.Services.AddValidatorsFromAssemblyContaining<IAssemblyMarker>()
     .AddEndpointsApiExplorer()
     .AddSwaggerGen()
-    .AddSerilog()
     .AddControllers();
+
+builder.Services
+    .AddSerilog()
+    .AddDbContext<DatabaseContext>(opt => opt.UseNpgsql(config.GetConnectionString("URI")))
+    .AddScoped<IClientRepository, ClientRepository>()
+    .AddFluentValidation(fv =>
+    {
+        fv.DisableDataAnnotationsValidation = true;
+    });
+
 
 
 var app = builder.Build();
