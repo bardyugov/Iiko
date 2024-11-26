@@ -4,11 +4,15 @@ WORKDIR /source
 COPY *.sln .
 COPY . .
 RUN dotnet restore
-RUN dotnet publish -c Release -o core --no-restore
-WORKDIR /source/app
+RUN dotnet publish -c Release -o Published --no-restore
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 as runner
-WORKDIR app
-COPY --from=build * ./
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 
-ENTRYPOINT ["dotnet", "app/Aiko.Core.dll"]
+EXPOSE 5000
+ENV ASPNETCORE_URLS=http://+:5000
+ENV ASPNETCORE_ENVIRONMENT=Development
+
+WORKDIR /app
+COPY --from=build /source/Published ./
+
+ENTRYPOINT ["dotnet", "Iiko.Core.dll"]
