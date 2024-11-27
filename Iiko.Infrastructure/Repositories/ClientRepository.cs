@@ -22,27 +22,24 @@ public class ClientRepository(DatabaseContext context, ILogger<ClientRepository>
 
     public async Task<List<Client>> Update(List<InsertClientCommand> clients, CancellationToken token)
     {
-        var notAddedClients = new List<Client>();
+        var databaseClients = await context.Clients.ToListAsync(token);
 
-        var tasks = clients.Select(async insertClient =>
-        {
-            var foundClient = await context.Clients.FirstOrDefaultAsync(e => e.ClientId == insertClient.ClientId, token);
-            if (foundClient != null)
-            {
-                notAddedClients.Add(foundClient);
-            }
-            else
-            {
-                var newClient = MapInsertCommandToDomain(insertClient);
-                await context.Clients.AddAsync(newClient, token);
-            }
-        });
+        var clientIds = databaseClients.Select(e => e.ClientId).ToList();
         
-        await Task.WhenAll(tasks);
+        var notExistEntities = clients
+            .Where(e => !clientIds.Contains(e.ClientId))
+            .GroupBy(e => e.ClientId)
+            .Select(e => e.First())
+            .Select(MapInsertCommandToDomain)
+            .ToList();
+        
+        await context.Clients.AddRangeAsync(notExistEntities, token);
         await context.SaveChangesAsync(token);
         
         logger.LogInformation("Success updated clients");
-        return notAddedClients;
+        return databaseClients
+            .Where(e => clientIds.Contains(e.ClientId))
+            .ToList();
     }
 
     public async Task<Result<string>> Remove(long id, CancellationToken token)
